@@ -234,7 +234,7 @@ public class Grid3D : MonoBehaviour
 
         // col and row == 4
         public int Dimention = 4;
-        public Node[,] grid;
+        public Node[,] nodes;
         public List<Node> neighbours = new List<Node>();
         public Node ModuleSelected;
 
@@ -246,9 +246,9 @@ public class Grid3D : MonoBehaviour
                 {
                         Instance = this;
 
-                        grid = new Node[Dimention, Dimention];
+                        nodes = new Node[Dimention, Dimention];
                         Generate3DMatrix();
-                        foreach (var node in grid)
+                        foreach (var node in nodes)
                         {
                                 node.trans = new GameObject().transform;
                                 node.trans.position = node.position;
@@ -261,7 +261,7 @@ public class Grid3D : MonoBehaviour
 
         private void GenerateModelsToDebug()
         {
-                foreach (var node in grid)
+                foreach (var node in nodes)
                 {
                         foreach (Module module in Modules)
                         {
@@ -277,7 +277,7 @@ public class Grid3D : MonoBehaviour
 
         public void UpdateModulesDebug()
         {
-                foreach (Node node in grid)
+                foreach (Node node in nodes)
                 {
                         if (node.collapsed)
                         {
@@ -310,7 +310,7 @@ public class Grid3D : MonoBehaviour
 
         public void Generate3DMatrix()
         {
-                grid = new Node[Dimention, Dimention];
+                nodes = new Node[Dimention, Dimention];
 
                 Vector3 botLeft = new Vector3(transform.position.x - Dimention * CellSize / 2, transform.position.y - Dimention * CellSize / 2, transform.position.z - Dimention * CellSize / 2) + new Vector3(5, 5, 5);
 
@@ -320,7 +320,7 @@ public class Grid3D : MonoBehaviour
                         for (int x = 0; x < Dimention; x++) // horizental
                         {
                                 cell = botLeft + new Vector3(RoundFloat(x * CellSize, 2), botLeft.y, RoundFloat(y * CellSize, 2));
-                                grid[x, y] = new Node(x, y, cell, Modules);
+                                nodes[x, y] = new Node(x, y, cell, Modules);
                         }
                 }
 
@@ -331,29 +331,29 @@ public class Grid3D : MonoBehaviour
                 {
                         for (int x = 0; x < Dimention; x++)
                         {
-                                Node currentNode = grid[x, y];
+                                Node currentNode = nodes[x, y];
                                 if (x > 0)
                                 {
-                                        currentNode.neighbours.Add(grid[x - 1, y]);
-                                        currentNode.Left = grid[x - 1, y];
+                                        currentNode.neighbours.Add(nodes[x - 1, y]);
+                                        currentNode.Left = nodes[x - 1, y];
                                 }
                                 //X is not mapSizeX - 1, then we can add right (x + 1)
                                 if (x < Dimention - 1)
                                 {
-                                        currentNode.neighbours.Add(grid[x + 1, y]);
-                                        currentNode.Right = grid[x + 1, y];
+                                        currentNode.neighbours.Add(nodes[x + 1, y]);
+                                        currentNode.Right = nodes[x + 1, y];
                                 }
                                 //Y is not 0, then we can add downwards (y - 1 )
                                 if (y > 0)
                                 {
-                                        currentNode.neighbours.Add(grid[x, y - 1]);
-                                        currentNode.Back = grid[x, y - 1];
+                                        currentNode.neighbours.Add(nodes[x, y - 1]);
+                                        currentNode.Back = nodes[x, y - 1];
                                 }
                                 //Y is not mapSizeY -1, then we can add upwards (y + 1)
                                 if (y < Dimention - 1)
                                 {
-                                        currentNode.neighbours.Add(grid[x, y + 1]);
-                                        currentNode.Forward = grid[x, y + 1];
+                                        currentNode.neighbours.Add(nodes[x, y + 1]);
+                                        currentNode.Forward = nodes[x, y + 1];
                                 }
                                 //if (up > 0)
                                 //{
@@ -371,7 +371,7 @@ public class Grid3D : MonoBehaviour
 
                 if (transform.childCount == 0)
                 {
-                        foreach (var celll in grid)
+                        foreach (var celll in nodes)
                         {
                                 // remove this line when finish 2d debugging
                                 Instantiate(model, celll.position, Quaternion.identity, GameObject.Find("Debug").transform);
@@ -386,7 +386,7 @@ public class Grid3D : MonoBehaviour
 
         private void WaveFuntion()
         {
-                grid[0, 0].Collapse();
+                nodes[0, 0].Collapse();
                 //grid[2, 2].Collapse();
                 //grid[3, 3].Collapse();
         }
@@ -402,18 +402,18 @@ public class Grid3D : MonoBehaviour
                 Vector3 botLeft = new Vector3(transform.position.x - Dimention * CellSize / 2, transform.position.y - Dimention * CellSize / 2, transform.position.z - Dimention * CellSize / 2) + new Vector3(5, 5, 5);
                 Gizmos.DrawLine(botLeft, botLeft + Vector3.up * 5);
                 //neighbours = new List<Node>();
-                if (grid == null || grid.Length == 0)
+                if (nodes == null || nodes.Length == 0)
                 {
-                        grid = new Node[Dimention, Dimention];
+                        nodes = new Node[Dimention, Dimention];
                         Generate3DMatrix();
-                        ModuleSelected = grid[0, 0];
+                        ModuleSelected = nodes[0, 0];
                 }
 
                 for (int i = 0; i < Dimention; i++)
                 {
                         for (int j = 0; j < Dimention; j++)
                         {
-                                Node current = grid[i, j];
+                                Node current = nodes[i, j];
                                 Gizmos.color = Color.yellow;
                                 int nbofmodules = current.PotentialModules.Count;
                                 Gizmos.DrawSphere(current.position, 2f);
@@ -481,9 +481,9 @@ public class Grid3D : MonoBehaviour
         public void CreateBackUp()
         {
                 previousGridLayout = new Node[Dimention, Dimention];
-                foreach (var item in grid)
+                foreach (var item in nodes)
                 {
-                        Node node = grid[item.x, item.y];
+                        Node node = nodes[item.x, item.y];
 
                         previousGridLayout[item.x, item.y] = new Node(node.x, node.y, node.position, node.PotentialModules);
 
@@ -503,7 +503,7 @@ public class Grid3D : MonoBehaviour
 
         public void RestoreLastBackUp()
         {
-                foreach (var node in grid)
+                foreach (var node in nodes)
                 {
                         Node backUpNode = previousGridLayout[node.x, node.y];
 

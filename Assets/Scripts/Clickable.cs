@@ -4,7 +4,7 @@ public class Clickable : MonoBehaviour
 {
         private void OnMouseDown()
         {
-                foreach (var node in Grid3D.Instance.grid)
+                foreach (var node in Grid3D.Instance.nodes)
                 {
                         //Debug.Log($"{node.position} {transform.position}");
 

@@ -7,10 +7,24 @@ public class Face
 {
         public Color[] Colors;
         private int index = 0;
-
-        public Face(int ColorCount)
+        public Direction direction;
+        public Direction opposetFace;
+        public Face(int ColorCount, Direction direction)
         {
                 Colors = new Color[ColorCount * ColorCount];
+                this.direction = direction;
+
+                if (this.direction == Direction.Left)
+                        opposetFace = Direction.Right;
+
+                if (this.direction == Direction.Right)
+                        opposetFace = Direction.Left;
+
+                if (this.direction == Direction.Forward)
+                        opposetFace = Direction.Back;
+
+                if (this.direction == Direction.Back)
+                        opposetFace = Direction.Forward;
         }
         public void AddColor(Color color)
         {
@@ -49,7 +63,7 @@ public class Face
                         }
                 }
 
-
+                /*
                 List<Color> tmp1 = new List<Color>();
                 foreach (Color color in Colors)
                 {
@@ -89,15 +103,17 @@ public class Face
                 Debug.Log($"{color1}");
 
 
-
+                */
 
 
                 return Result;
         }
 
-        public bool CanConnect(Face rightFace)
+        public bool CanConnect(Face otherFace)
         {
-                return Equals(rightFace);
+                // can only connect opposet Sides
+                if (otherFace.direction != opposetFace) return false;
+                return Equals(otherFace);
         }
 }
 public class Tile : MonoBehaviour
@@ -118,7 +134,7 @@ public class Tile : MonoBehaviour
         public Face RightFace;
         public Face ForwardFace;
         public Face BackFace;
-        public bool EnableGizmoz;
+        public bool EnableGizmoz = false;
 
         public enum RotationType
         {
@@ -136,18 +152,13 @@ public class Tile : MonoBehaviour
                 else if (Rotation == RotationType.TwoRotations)
                 {
                         Tile clone = Instantiate(this, newPos, Quaternion.identity);
+
+                        clone.Init();
                         clone.transform.name = $"{transform.name}_{90}";
                         clone.rotationNumber = 1;
                         clone.transform.rotation = Quaternion.Euler(0, 90, 0);
-
-                        clone.LeftFace = new Face(TileSideVoxels);
-
-                        clone.RightFace = new Face(TileSideVoxels);
-
-                        clone.ForwardFace = new Face(TileSideVoxels);
-
-                        clone.BackFace = new Face(TileSideVoxels);
                         clone.CreateFourSideColor();
+                        clone.EnableGizmoz = EnableGizmoz;
                         Clones.Add(clone);
                 }
                 else if (Rotation == RotationType.FourRotations)
@@ -156,20 +167,14 @@ public class Tile : MonoBehaviour
                         {
 
                                 Tile clone = Instantiate(this, newPos, Quaternion.identity);
+                                clone.Init();
                                 clone.transform.name = $"{transform.name}_{90 * i}";
                                 clone.rotationNumber = i;
-                                newPos = clone.transform.position + Vector3.left;
                                 clone.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
-
-                                clone.LeftFace = new Face(TileSideVoxels);
-
-                                clone.RightFace = new Face(TileSideVoxels);
-
-                                clone.ForwardFace = new Face(TileSideVoxels);
-
-                                clone.BackFace = new Face(TileSideVoxels);
                                 clone.CreateFourSideColor();
+                                clone.EnableGizmoz = EnableGizmoz;
                                 Clones.Add(clone);
+                                newPos = clone.transform.position + Vector3.left;
                         }
                 }
 
@@ -223,7 +228,6 @@ public class Tile : MonoBehaviour
                 Vector3 rayStart = Vector3.zero; ;
                 float offset = VoxelSize / 2;
                 Vector3 rayDir = Vector3.zero;
-
 
 
                 Vector3 colliderMinBound = meshCollider.bounds.min;
@@ -369,7 +373,6 @@ public class Tile : MonoBehaviour
                 Vector3 rayStart = Vector3.zero; ;
                 float offset = VoxelSize / 2;
                 Vector3 rayDir = Vector3.zero;
-                TileSideVoxels = Mathf.RoundToInt(meshCollider.bounds.size.x / VoxelSize);
                 Vector3 center = (meshCollider.bounds.max + meshCollider.bounds.min) / 2;
                 Gizmos.color = Color.black;
 
@@ -589,4 +592,21 @@ public class Tile : MonoBehaviour
 
                 return rayStart;
         }
+
+        internal void Init()
+        {
+
+                LeftFace = new Face(TileSideVoxels, Direction.Left);
+
+                RightFace = new Face(TileSideVoxels, Direction.Right);
+
+                ForwardFace = new Face(TileSideVoxels, Direction.Forward);
+
+                BackFace = new Face(TileSideVoxels, Direction.Back);
+                MeshCollider meshCollider = transform.GetComponentInChildren<MeshCollider>();
+                TileSideVoxels = Mathf.RoundToInt(meshCollider.bounds.size.x / VoxelSize);
+
+        }
+
+
 }

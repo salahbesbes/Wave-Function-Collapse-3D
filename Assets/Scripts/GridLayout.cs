@@ -18,7 +18,7 @@ public class GridLayout : MonoBehaviour
 
         private void Start()
         {
-                foreach (var item in grid.grid)
+                foreach (var item in grid.nodes)
                 {
                         uiText.text = $"{item.Entropy}";
                         tmp[item.x, item.y] = Instantiate(uiText, transform);
@@ -27,7 +27,7 @@ public class GridLayout : MonoBehaviour
 
         private void Update()
         {
-                foreach (var item in grid.grid)
+                foreach (var item in grid.nodes)
                 {
                         Text textTmp = tmp[item.x, item.y];
                         textTmp.text = $"{item.Entropy}";
