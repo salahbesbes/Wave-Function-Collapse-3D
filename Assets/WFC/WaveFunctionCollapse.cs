@@ -6,7 +6,8 @@ using UnityEngine;
 [ExecuteAlways]
 public class WaveFunctionCollapse : MonoBehaviour
 {
-
+        public Tile tiles1;
+        public Tile tiles2;
         public Tile EmptySpace;
         public SerialisableGrid.Grid grid2d;
         public static WaveFunctionCollapse Instance;
@@ -39,14 +40,16 @@ public class WaveFunctionCollapse : MonoBehaviour
                 //        click.cell = cell;
                 //}
                 //PlaceAllPossibleCells();
-                foreach (Transform cild in transform)
-                {
-                        Destroy(cild.gameObject);
-                }
+
+                DestroyImmediate(point.gameObject);
+                point = null;
+                point = new GameObject("parent").transform;
+                point.SetParent(transform);
+
                 Generate3DMatrix();
                 foreach (Cell cell in grid)
                 {
-                        Clickable click = Instantiate(cellPrefab, transform);
+                        Clickable click = Instantiate(cellPrefab, point);
                         cell.trans = click.transform;
                         cell.trans.position = cell.position;
                         cell.trans.name = $"[{cell.x} {cell.y}]";
@@ -390,6 +393,7 @@ public class Cell
         public void RemoveConstrain()
         {
                 List<Tile> CopyOfPotentialTiles = new List<Tile>(PotentialTiles);
+                if (PotentialTiles.Count == 0) Debug.Log($"PotentialTiles is already empty ");
                 List<Tile> constraints = new List<Tile>();
                 Direction[] FourDirection = new Direction[4] { Direction.Left, Direction.Right, Direction.Back, Direction.Forward };
                 foreach (Tile tile in CopyOfPotentialTiles)

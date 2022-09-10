@@ -54,6 +54,11 @@ public class CustomInspector : Editor
                         }
                         wfc.PlaceAllPossibleCells();
                 }
+
+                if (GUILayout.Button(" Test 2 Faces"))
+                {
+                        wfc.tiles1.RightFace.Equals(wfc.tiles2.LeftFace);
+                }
                 //add everthing the button would do.
         }
 }

@@ -4,27 +4,48 @@ using UnityEngine;
 [Serializable]
 public class Face
 {
-        public Color[] Colors;
+        public List<Color> Colors = new List<Color>();
         private int index = 0;
-        public Direction direction;
+        [SerializeField]
+        private Direction direction;
         public Direction opposetFace;
 
+        public Direction Direction
+        {
+                get => direction; set
+                {
+                        direction = value;
+                        if (value == Direction.Left)
+                                opposetFace = Direction.Right;
+
+                        if (value == Direction.Right)
+                                opposetFace = Direction.Left;
+
+                        if (value == Direction.Forward)
+                                opposetFace = Direction.Back;
+
+                        if (value == Direction.Back)
+                                opposetFace = Direction.Forward;
+                }
+        }
+
+
+        public Face CloneFace(Direction direction)
+        {
+                Face newface = new Face(1, direction);
+
+                foreach (Color color in Colors)
+                {
+                        newface.Colors.Add(color);
+                }
+                return newface;
+        }
         public Face(int ColorCount, Direction direction)
         {
-                Colors = new Color[ColorCount * ColorCount];
-                this.direction = direction;
+                //Colors = new Color[ColorCount * ColorCount];
+                this.Direction = direction;
 
-                if (this.direction == Direction.Left)
-                        opposetFace = Direction.Right;
 
-                if (this.direction == Direction.Right)
-                        opposetFace = Direction.Left;
-
-                if (this.direction == Direction.Forward)
-                        opposetFace = Direction.Back;
-
-                if (this.direction == Direction.Back)
-                        opposetFace = Direction.Forward;
         }
         public void AddColor(Color color)
         {
@@ -51,18 +72,34 @@ public class Face
                         return false;
                 }
 
+                if (otherFace.opposetFace != Direction)
+                {
+                        Debug.Log($" can onlt connect opposit faces");
+                        return false;
+                }
 
                 bool Result = true;
-                for (int i = 0; i < Colors.Length; i++)
+                //Debug.Log($" colors of both side is equal  {otherFace.Colors.Count == Colors.Count}");
+                if (otherFace.Colors.Count == Colors.Count)
                 {
-                        if (otherFace.Colors[i] != this.Colors[i])
+
+                        for (int i = 0; i < Colors.Count; i++)
                         {
-                                //Debug.Log($"other color {otherFace.Colors[i]} myColor {Colors[i]}");
-                                Result = false;
-                                break;
+
+                                if (otherFace.Colors[i] != this.Colors[i])
+                                {
+                                        //Debug.Log($"other color {otherFace.Colors[i]} myColor {Colors[i]}");
+                                        Result = false;
+                                        break;
+                                }
+
                         }
                 }
-                /*
+                else
+                {
+                        Result = false;
+                }
+
                 List<Color> tmp1 = new List<Color>();
                 foreach (Color color in Colors)
                 {
@@ -101,16 +138,13 @@ public class Face
 
                 Debug.Log($"{color1}");
 
-
-                */
-
                 return Result;
         }
 
         public bool CanConnect(Face otherFace)
         {
                 // can only connect opposet Sides
-                if (otherFace.direction != opposetFace) return false;
+                if (otherFace.Direction != opposetFace) return false;
                 return Equals(otherFace);
         }
 }
@@ -119,7 +153,7 @@ public class Tile : MonoBehaviour
         [HideInInspector]
         public int rotationNumber = 0;
         public float VoxelSize = 0.1f;
-        public int TileSideVoxels = 8;
+        public int TileSideVoxels = 3;
         public List<Tile> forwardCantBe = new List<Tile>();
         public List<Tile> backCantBe = new List<Tile>();
         public List<Tile> rightCantBe = new List<Tile>();
@@ -139,9 +173,9 @@ public class Tile : MonoBehaviour
 
         public enum RotationType
         {
+                FourRotations,
                 OnlyRotation,
                 TwoRotations,
-                FourRotations
         }
         public void Rotate90(int times = 1)
         {
@@ -162,6 +196,20 @@ public class Tile : MonoBehaviour
                         clone.EnableGizmoz = EnableGizmoz;
 
 
+
+                        // rotate Faces
+                        clone.RightFace = ForwardFace;
+                        clone.BackFace = RightFace;
+                        clone.LeftFace = BackFace;
+                        clone.ForwardFace = LeftFace;
+
+                        clone.RightFace = ForwardFace.CloneFace(Direction.Right);
+                        clone.BackFace = RightFace.CloneFace(Direction.Back);
+                        clone.LeftFace = BackFace.CloneFace(Direction.Left);
+                        clone.ForwardFace = LeftFace.CloneFace(Direction.Forward);
+
+
+
                         clone.rightCantBe = forwardCantBe;
                         clone.backCantBe = rightCantBe;
                         clone.leftCantBe = backCantBe;
@@ -174,6 +222,13 @@ public class Tile : MonoBehaviour
                         List<Tile> tmpright = rightCantBe;
                         List<Tile> tmpback = backCantBe;
                         List<Tile> tmpleft = leftCantBe;
+
+
+
+                        Face tmpRightFace = RightFace;
+                        Face tmpForwardFace = ForwardFace;
+                        Face tmpBackFace = BackFace;
+                        Face tmpLeftFace = LeftFace;
                         for (int i = 1; i <= 3; i++)
                         {
 
@@ -182,9 +237,25 @@ public class Tile : MonoBehaviour
                                 clone.transform.name = $"{transform.name}_{90 * i}";
                                 clone.rotationNumber = i;
                                 clone.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
-                                clone.CreateFourSideColor();
+                                //clone.CreateFourSideColor();
                                 clone.EnableGizmoz = EnableGizmoz;
 
+
+                                // rotate faces
+                                clone.RightFace = tmpForwardFace.CloneFace(Direction.Right);
+                                clone.BackFace = tmpRightFace.CloneFace(Direction.Back);
+                                clone.LeftFace = tmpBackFace.CloneFace(Direction.Left);
+                                clone.ForwardFace = tmpLeftFace.CloneFace(Direction.Forward);
+
+                                clone.ForwardFace.Direction = tmpForwardFace.Direction;
+                                clone.RightFace.Direction = tmpRightFace.Direction;
+                                clone.BackFace.Direction = tmpBackFace.Direction;
+                                clone.LeftFace.Direction = tmpLeftFace.Direction;
+
+                                tmpRightFace = clone.RightFace;
+                                tmpForwardFace = clone.ForwardFace;
+                                tmpBackFace = clone.BackFace;
+                                tmpLeftFace = clone.LeftFace;
 
 
 
@@ -239,7 +310,7 @@ public class Tile : MonoBehaviour
                 foreach (Tile prefab in Clones)
                 {
                         if (prefab != null)
-                                DestroyImmediate(prefab.gameObject);
+                                Destroy(prefab.gameObject);
                 }
 
                 Clones.Clear();
@@ -320,12 +391,13 @@ public class Tile : MonoBehaviour
 
                                                 //Debug.Log($"<color=#{ColorUtility.ToHtmlStringRGB(color)}> ################### </color>");
 
-                                                CurrentFace.Colors[i * TileSideVoxels + j] = color;
+                                                //CurrentFace.Colors[i * TileSideVoxels + j] = color;
+                                                CurrentFace.Colors.Add(color);
 
                                         }
                                         else
                                         {
-                                                CurrentFace.Colors[i * TileSideVoxels + j] = new Color(0, 0, 0, 0);
+                                                //CurrentFace.Colors[i * TileSideVoxels + j] = new Color(0, 0, 0, 0);
 
                                         }
                                 }
@@ -369,6 +441,44 @@ public class Tile : MonoBehaviour
                 }
                 return CurrentFace;
         }
+
+        private Direction GetCurrentDirection(Direction direction)
+        {
+                Direction CurrentDir = Direction.None;
+                if (direction == Direction.Right)
+                {
+                        if (rotationNumber % 2 == 0)
+                                CurrentDir = Direction.Right;
+                        else
+                                CurrentDir = Direction.Left;
+
+                }
+                if (direction == Direction.Left)
+                {
+                        if (rotationNumber % 2 == 0)
+                                CurrentDir = Direction.Left;
+                        else
+                                CurrentDir = Direction.Right;
+                }
+                if (direction == Direction.Forward)
+                {
+                        if (rotationNumber % 2 == 0)
+                                CurrentDir = Direction.Forward;
+                        else
+                                CurrentDir = Direction.Back;
+
+                }
+                if (direction == Direction.Back)
+                {
+                        if (rotationNumber % 2 == 0)
+                                CurrentDir = Direction.Back;
+                        else
+                                CurrentDir = Direction.Forward;
+
+                }
+                return CurrentDir;
+        }
+
 
         Vector3[] RotatecolliderBounds(MeshCollider meshCollider, Vector3 colliderMinBound, Vector3 colliderMaxBound)
         {
