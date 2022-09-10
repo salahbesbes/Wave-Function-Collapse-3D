@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 [Serializable]
 public class Face
@@ -9,6 +8,7 @@ public class Face
         private int index = 0;
         public Direction direction;
         public Direction opposetFace;
+
         public Face(int ColorCount, Direction direction)
         {
                 Colors = new Color[ColorCount * ColorCount];
@@ -62,7 +62,6 @@ public class Face
                                 break;
                         }
                 }
-
                 /*
                 List<Color> tmp1 = new List<Color>();
                 foreach (Color color in Colors)
@@ -105,7 +104,6 @@ public class Face
 
                 */
 
-
                 return Result;
         }
 
@@ -122,7 +120,10 @@ public class Tile : MonoBehaviour
         public int rotationNumber = 0;
         public float VoxelSize = 0.1f;
         public int TileSideVoxels = 8;
-
+        public List<Tile> forwardCantBe = new List<Tile>();
+        public List<Tile> backCantBe = new List<Tile>();
+        public List<Tile> rightCantBe = new List<Tile>();
+        public List<Tile> leftCantBe = new List<Tile>();
         [Range(1, 100)]
         public int Weight = 50;
 
@@ -159,10 +160,20 @@ public class Tile : MonoBehaviour
                         clone.transform.rotation = Quaternion.Euler(0, 90, 0);
                         clone.CreateFourSideColor();
                         clone.EnableGizmoz = EnableGizmoz;
+
+
+                        clone.rightCantBe = forwardCantBe;
+                        clone.backCantBe = rightCantBe;
+                        clone.leftCantBe = backCantBe;
+                        clone.forwardCantBe = leftCantBe;
                         Clones.Add(clone);
                 }
                 else if (Rotation == RotationType.FourRotations)
                 {
+                        List<Tile> tmpforward = forwardCantBe;
+                        List<Tile> tmpright = rightCantBe;
+                        List<Tile> tmpback = backCantBe;
+                        List<Tile> tmpleft = leftCantBe;
                         for (int i = 1; i <= 3; i++)
                         {
 
@@ -173,6 +184,22 @@ public class Tile : MonoBehaviour
                                 clone.transform.rotation = Quaternion.Euler(0, 90 * i, 0);
                                 clone.CreateFourSideColor();
                                 clone.EnableGizmoz = EnableGizmoz;
+
+
+
+
+                                // rotate constraints
+                                clone.rightCantBe = tmpforward;
+                                clone.backCantBe = tmpright;
+                                clone.leftCantBe = tmpback;
+                                clone.forwardCantBe = tmpleft;
+
+                                tmpforward = clone.forwardCantBe;
+                                tmpright = clone.rightCantBe;
+                                tmpback = clone.backCantBe;
+                                tmpleft = clone.leftCantBe;
+
+
                                 Clones.Add(clone);
                                 newPos = clone.transform.position + Vector3.left;
                         }
@@ -218,10 +245,6 @@ public class Tile : MonoBehaviour
                 Clones.Clear();
         }
 
-        public bool CanAppendTile(Color[] seq1, Color[] seq2)
-        {
-                return Enumerable.SequenceEqual(seq1, seq2);
-        }
         public void CreateFourSideColor()
         {
                 MeshCollider meshCollider = transform.GetComponentInChildren<MeshCollider>();
@@ -593,7 +616,7 @@ public class Tile : MonoBehaviour
                 return rayStart;
         }
 
-        internal void Init()
+        public void Init()
         {
 
                 LeftFace = new Face(TileSideVoxels, Direction.Left);
@@ -607,6 +630,5 @@ public class Tile : MonoBehaviour
                 TileSideVoxels = Mathf.RoundToInt(meshCollider.bounds.size.x / VoxelSize);
 
         }
-
 
 }

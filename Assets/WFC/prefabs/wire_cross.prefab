@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 966115073667569501}
+  - component: {fileID: 1299257686}
   m_Layer: 0
   m_Name: wire_cross
   m_TagString: Untagged
@@ -23,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4265767920531793230}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3.6349082, y: 1.2294146, z: 0.8139796}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -31,6 +32,86 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1299257686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4265767920531793230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc704d47ecdd63846a2a22d6eae44904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationNumber: 0
+  VoxelSize: 0.1
+  TileSideVoxels: 3
+  forwardCantBe: []
+  backCantBe:
+  - {fileID: 0}
+  rightCantBe:
+  - {fileID: 0}
+  leftCantBe: []
+  Weight: 50
+  Rotation: 2
+  Clones:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  LeftFace:
+    Colors:
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    direction: 0
+    opposetFace: 1
+  RightFace:
+    Colors:
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0.8156863, b: 0.47843137, a: 1}
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    direction: 1
+    opposetFace: 0
+  ForwardFace:
+    Colors:
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0.8156863, b: 0.47843137, a: 1}
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    direction: 3
+    opposetFace: 2
+  BackFace:
+    Colors:
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0.8156863, b: 0.47843137, a: 1}
+    - {r: 0.019607844, g: 0.4117647, b: 0.039215688, a: 1}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    - {r: 0, g: 0, b: 0, a: 0}
+    direction: 2
+    opposetFace: 3
+  EnableGizmoz: 0
 --- !u!1 &7727974638175977683
 GameObject:
   m_ObjectHideFlags: 0
@@ -58,7 +139,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7727974638175977683}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15, y: 0, z: 0.15}
+  m_LocalPosition: {x: 0.161, y: -0.437, z: 0.154}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 966115073667569501}

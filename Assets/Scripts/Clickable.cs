@@ -2,27 +2,10 @@ using UnityEngine;
 
 public class Clickable : MonoBehaviour
 {
+        public Cell cell;
         private void OnMouseDown()
         {
-                foreach (var node in Grid3D.Instance.nodes)
-                {
-                        //Debug.Log($"{node.position} {transform.position}");
-
-                        if (CompaireVector3(node.position, transform.position))
-                        {
-                                //Debug.Log($" clicked on {node}");
-                                Grid3D.Instance.ModuleSelected = node;
-
-                                Grid3D.Instance.neighbours = node.neighbours;
-
-                                if (node.collapsed == true) return;
-
-                                node.Collapse();
-
-                                return;
-                        }
-                }
-                Debug.Log($" cant find position clicked ");
+                cell.Collapse();
         }
 
         public bool CompaireVector3(Vector3 first, Vector3 second)
